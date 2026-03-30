@@ -1,5 +1,8 @@
 package IHM;
 
+import Threads.CercleAnimation;
+import Threads.FrameAnimation;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -80,5 +83,31 @@ public class EcouteurMenu implements ActionListener {
             d.desktop.add(gestion);
 
         }
+        if (e.getSource() == d.Animation) {
+            FrameAnimation animation = new FrameAnimation();
+            animation.setVisible(true);
+            animation.setSize(d.desktop.getSize());
+            animation.setMaximizable(true);
+            animation.setClosable(true);
+            animation.setIconifiable(true);
+            animation.setResizable(true);
+            d.desktop.add(animation);
+            animation.toFront();
+
+        }
+
+        if (e.getSource() == d.CercleAnimation) {
+            CercleAnimation cercleAnimation = new CercleAnimation();
+            cercleAnimation.setVisible(true);
+            cercleAnimation.setSize(d.desktop.getSize());
+            cercleAnimation.setMaximizable(true);
+            cercleAnimation.setClosable(true);
+            cercleAnimation.setIconifiable(true);
+            cercleAnimation.setResizable(true);
+            d.desktop.add(cercleAnimation);
+            cercleAnimation.toFront();
+
+        }
+
     }
 }

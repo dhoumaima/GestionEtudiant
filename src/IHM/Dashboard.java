@@ -1,13 +1,16 @@
 package IHM;
 
+import Threads.FrameAnimation;
+import Threads.TimeSinusoide;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Dashboard extends JFrame {
     JMenuBar menuBar;
-    JMenu Tp1,Tp2 ,Tp3;
+    JMenu Tp1,Tp2 ,Tp3,TP4;
     JLabel Title;
-    JMenuItem Grid,Flow,Border,GestionProfils,CuruclumVitae,GestionEtudiant;
+    JMenuItem Grid,Flow,Border,GestionProfils,CuruclumVitae,GestionEtudiant,Animation,CercleAnimation;
     JDesktopPane desktop;
 
     Dashboard(){
@@ -15,6 +18,7 @@ public class Dashboard extends JFrame {
         this.setTitle("Tp JAVA");
         this.setSize(800,600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
 
         Flow=new JMenuItem("Flow");
@@ -48,17 +52,39 @@ public class Dashboard extends JFrame {
         Tp3=new JMenu("TP3");
         Tp3.add(GestionEtudiant);
 
+        Animation =new JMenuItem("Animation");
+        Animation.addActionListener(new EcouteurMenu(this));
+
+
+        CercleAnimation =new JMenuItem("Cercle Animation");
+        CercleAnimation.addActionListener(new EcouteurMenu(this));
+
+        TP4 = new JMenu("TP4");
+        TP4.add(Animation);
+        TP4.add(CercleAnimation);
+
+
         //creation
         menuBar =new JMenuBar();
         menuBar.add(Tp1);
         menuBar.add(Tp2);
         menuBar.add(Tp3);
+        menuBar.add(TP4);
         this.setJMenuBar(menuBar);
 
 
         //desktop
         desktop = new JDesktopPane();
         this.add(desktop);
+
+        TimeSinusoide ts = new TimeSinusoide();
+        desktop.add(ts);
+        ts.setVisible(true);
+        try {
+            ts.setMaximum(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }
