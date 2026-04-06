@@ -108,17 +108,17 @@ public class EcouteurMenu implements ActionListener {
             cercleAnimation.toFront();
 
         }
-//        if (e.getSource() == d.Client) {
-//            ClientInterface clientInterface = new ClientInterface();
-//            clientInterface.setVisible(true);
-//            clientInterface.setSize(d.desktop.getSize());
-//            clientInterface.setMaximizable(true);
-//            clientInterface.setClosable(true);
-//            clientInterface.setIconifiable(true);
-//            clientInterface.setResizable(true);
-//            d.desktop.add(clientInterface);
-//            clientInterface.toFront();
+        if (e.getSource() == d.Client) {
+            ClientInterface clientInterface = new ClientInterface();
+            clientInterface.setVisible(true);
+            clientInterface.setSize(d.desktop.getSize());
+            clientInterface.setMaximizable(true);
+            clientInterface.setClosable(true);
+            clientInterface.setIconifiable(true);
+            clientInterface.setResizable(true);
+            d.desktop.add(clientInterface);
+            clientInterface.toFront();
 
-      //  }
+        }
     }
 }

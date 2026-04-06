@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import SocketClient.Client;
 
-public class ClientInterface extends JFrame {
+public class ClientInterface extends JInternalFrame {
 
     private JTextField idField;
     private JButton addButton;
@@ -22,7 +22,6 @@ public class ClientInterface extends JFrame {
         setTitle("Gestion des Clients");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel();
@@ -83,7 +82,6 @@ public class ClientInterface extends JFrame {
             }
         });
     }
-
     private JPanel createClientPanel(String clientId) {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -92,11 +90,9 @@ public class ClientInterface extends JFrame {
 
         JTextArea messagesArea = new JTextArea();
         messagesArea.setEditable(false);
-
         for (String msg : history) {
             messagesArea.append(msg + "\n");
         }
-
         JScrollPane scrollPane = new JScrollPane(messagesArea);
         panel.add(scrollPane, BorderLayout.CENTER);
 
@@ -108,15 +104,31 @@ public class ClientInterface extends JFrame {
             messagesArea.append(newMessage + "\n");
         });
 
-        JPanel sendPanel = new JPanel(new FlowLayout());
-        JTextField tfReceiver = new JTextField(8);
-        JTextField tfMessage = new JTextField(25);
-        JButton btnSend = new JButton("Envoyer");
+        JPanel sendPanel = new JPanel();
+        sendPanel.setLayout(new BoxLayout(sendPanel, BoxLayout.Y_AXIS));
+        sendPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        sendPanel.add(new JLabel("ID Récepteur (ou all):"));
-        sendPanel.add(tfReceiver);
-        sendPanel.add(tfMessage);
-        sendPanel.add(btnSend);
+        JPanel idPanel = new JPanel(new BorderLayout());
+        JLabel lblReceiver = new JLabel("ID Récepteur (ou all) : ");
+        JTextField tfReceiver = new JTextField();
+        tfReceiver.setPreferredSize(new Dimension(100, 30));
+        idPanel.add(lblReceiver, BorderLayout.WEST);
+        idPanel.add(tfReceiver, BorderLayout.CENTER);
+
+        JPanel messagePanel = new JPanel(new BorderLayout());
+        JTextField tfMessage = new JTextField();
+        messagePanel.add(tfMessage, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnSend = new JButton("Envoyer");
+        btnSend.setPreferredSize(new Dimension(100, 30));
+        buttonPanel.add(btnSend);
+
+        sendPanel.add(idPanel);
+        sendPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        sendPanel.add(messagePanel);
+        sendPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        sendPanel.add(buttonPanel);
 
         panel.add(sendPanel, BorderLayout.SOUTH);
 
