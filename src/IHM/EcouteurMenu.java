@@ -118,7 +118,7 @@ public class EcouteurMenu implements ActionListener {
 //            clientInterface.setResizable(true);
 //            d.desktop.add(clientInterface);
 //            clientInterface.toFront();
-//
-//        }
+
+      //  }
     }
 }

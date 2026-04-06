@@ -3,22 +3,24 @@ package SocketClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class ClientRead extends Thread{
-    BufferedReader br;
-    public ClientRead(BufferedReader br){
-        this.br=br;
+public class ClientRead extends Thread {
+    private BufferedReader br;
+    private MessageListener listener;
+
+    public ClientRead(BufferedReader br, MessageListener listener) {
+        this.br = br;
+        this.listener = listener;
     }
 
     @Override
     public void run() {
-        String msg = null;
-        while (true){
-            try {
-                msg = br.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        String msg;
+        try {
+            while ((msg = br.readLine()) != null) {
+                listener.onMessageReceived(msg);
             }
-            System.out.println(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

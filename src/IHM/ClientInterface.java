@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.ArrayList;
+import SocketClient.Client;
 
 public class ClientInterface extends JFrame {
 
@@ -12,7 +15,8 @@ public class ClientInterface extends JFrame {
     private DefaultListModel<String> model;
     private JList<String> clientList;
     private JTabbedPane tabbedPane;
-    private SocketClient.Client client;
+    private HashMap<String, Client> clientPerTab = new HashMap<>();
+    private HashMap<String, ArrayList<String>> messageHistory = new HashMap<>();
 
     public ClientInterface() {
         setTitle("Gestion des Clients");
@@ -31,13 +35,10 @@ public class ClientInterface extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-
         model = new DefaultListModel<>();
         clientList = new JList<>(model);
 
-
         tabbedPane = new JTabbedPane();
-
 
         JSplitPane splitPane = new JSplitPane();
         splitPane.setLeftComponent(new JScrollPane(clientList));
@@ -45,26 +46,25 @@ public class ClientInterface extends JFrame {
 
         add(splitPane, BorderLayout.CENTER);
 
-
         addButton.addActionListener(e -> {
             String id = idField.getText().trim();
             if (!id.isEmpty()) {
-                model.addElement(id);
-                idField.setText("");
-                try {
-
-                    client = new SocketClient.Client("127.0.0.1", 9003, id);
-                    client.startReading();
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Erreur connexion serveur: " + ex.getMessage());
+                if (!model.contains(id)) {
+                    model.addElement(id);
                 }
-
+                idField.setText("");
+                if (!clientPerTab.containsKey(id)) {
+                    try {
+                        Client newClient = new Client("127.0.0.1", 9003, id);
+                        clientPerTab.put(id, newClient);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Erreur connexion serveur: " + ex.getMessage());
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Entrer un ID !");
             }
         });
-
 
         clientList.addMouseListener(new MouseAdapter() {
             @Override
@@ -72,7 +72,6 @@ public class ClientInterface extends JFrame {
                 if (e.getClickCount() == 2) {
                     String id = clientList.getSelectedValue();
                     int index = tabbedPane.indexOfTab(id);
-
                     if (index == -1) {
                         JPanel panel = createClientPanel(id);
                         tabbedPane.addTab(id, panel);
@@ -85,15 +84,29 @@ public class ClientInterface extends JFrame {
         });
     }
 
-
     private JPanel createClientPanel(String clientId) {
         JPanel panel = new JPanel(new BorderLayout());
 
+        Client client = clientPerTab.get(clientId);
+        ArrayList<String> history = messageHistory.getOrDefault(clientId, new ArrayList<>());
 
         JTextArea messagesArea = new JTextArea();
         messagesArea.setEditable(false);
-        panel.add(new JScrollPane(messagesArea), BorderLayout.CENTER);
 
+        for (String msg : history) {
+            messagesArea.append(msg + "\n");
+        }
+
+        JScrollPane scrollPane = new JScrollPane(messagesArea);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        client.startReading(newMessage -> {
+            if (!messageHistory.containsKey(clientId)) {
+                messageHistory.put(clientId, new ArrayList<>());
+            }
+            messageHistory.get(clientId).add(newMessage);
+            messagesArea.append(newMessage + "\n");
+        });
 
         JPanel sendPanel = new JPanel(new FlowLayout());
         JTextField tfReceiver = new JTextField(8);
@@ -110,18 +123,21 @@ public class ClientInterface extends JFrame {
         btnSend.addActionListener(e -> {
             String receiver = tfReceiver.getText().trim();
             String message = tfMessage.getText().trim();
+            if (receiver.isEmpty() || message.isEmpty()) return;
 
-            if (receiver.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Entrer ID ou all !");
-                return;
+            if (!messageHistory.containsKey(clientId)) {
+                messageHistory.put(clientId, new ArrayList<>());
             }
 
-            if (message.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Message obligatoire !");
-                return;
+            if (receiver.equalsIgnoreCase("all")) {
+                client.sendMessage("@all" + message);
+                messageHistory.get(clientId).add("Moi -> Tous : " + message);
+                messagesArea.append("Moi -> Tous : " + message + "\n");
+            } else {
+                client.sendMessage("@" + receiver + ":" + message);
+                messageHistory.get(clientId).add("Moi -> " + receiver + " : " + message);
+                messagesArea.append("Moi -> " + receiver + " : " + message + "\n");
             }
-
-
             tfMessage.setText("");
         });
 
