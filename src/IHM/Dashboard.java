@@ -8,9 +8,9 @@ import java.awt.*;
 
 public class Dashboard extends JFrame {
     JMenuBar menuBar;
-    JMenu Tp1,Tp2 ,Tp3,TP4;
+    JMenu Tp1,Tp2 ,Tp3,TP4,TP5;
     JLabel Title;
-    JMenuItem Grid,Flow,Border,GestionProfils,CuruclumVitae,GestionEtudiant,Animation,CercleAnimation;
+    JMenuItem Grid,Flow,Border,GestionProfils,CuruclumVitae,GestionEtudiant,Animation,CercleAnimation,Client;
     JDesktopPane desktop;
 
     Dashboard(){
@@ -63,6 +63,11 @@ public class Dashboard extends JFrame {
         TP4.add(Animation);
         TP4.add(CercleAnimation);
 
+        Client =new JMenuItem("Client");
+        Client.addActionListener(new EcouteurMenu(this));
+
+        TP5 = new JMenu("TP5");
+        TP5.add(Client);
 
         //creation
         menuBar =new JMenuBar();
@@ -70,6 +75,7 @@ public class Dashboard extends JFrame {
         menuBar.add(Tp2);
         menuBar.add(Tp3);
         menuBar.add(TP4);
+        menuBar.add(TP5);
         this.setJMenuBar(menuBar);
 
 
