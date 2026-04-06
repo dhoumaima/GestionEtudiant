@@ -1,35 +1,41 @@
 package SocketClient;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client
-{
-    public static void main(String[] args) {
-        try {
-            Socket s =new Socket("127.0.0.1",9003);
-            System.out.println("I'm client , I'm connected to the server ....");
+public class Client {
+    private Socket s;
+    private PrintWriter pw;
+    private BufferedReader br;
+    private ClientRead clientRead;
+    private ClientWrite clientWrite;
 
-            //client read
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(s.getInputStream()));
-            ClientRead clientRead =new ClientRead(br);
-            clientRead.start();
+    public Client(String host, int port, String id) throws IOException {
+        s = new Socket(host, port);
+        System.out.println("Client connecté au serveur ...");
 
-            //cleint write
-            Scanner sc = new Scanner(System.in);
-            PrintWriter pw = new PrintWriter(s.getOutputStream());
-            ClientWrite clientWrite = new ClientWrite(pw,sc);
-            clientWrite.start();
+        br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        pw = new PrintWriter(s.getOutputStream(), true);
 
+        // envoyer ID au serveur dès la connexion
+        pw.println(id);
 
+        // Threads lecture/écriture
+        clientRead = new ClientRead(br);
+        clientWrite = new ClientWrite(pw, new Scanner(System.in));
+    }
 
-        } catch (IOException e) {
-            System.out.println("Erreur client.."+e.getMessage());
-        }
+    public void startReading() {
+        clientRead.start();
+    }
+
+    public void startWriting() {
+        clientWrite.start();
+    }
+
+    public void sendMessage(String msg) {
+        pw.println(msg);
+        pw.flush();
     }
 }
